@@ -11,7 +11,7 @@ import { MapView } from "@/components/map/map-view";
 import { api } from "@/lib/api";
 import { JourneyOption, PlanResult } from "@/domain/types";
 
-export default function PlanResultsPage() {
+function PlanResultsContent() {
   const searchParams = useSearchParams();
   const fromParam = searchParams.get("from") || "";
   const toParam = searchParams.get("to") || undefined;
@@ -243,5 +243,24 @@ export default function PlanResultsPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function PlanResultsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-4">
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-6 w-1/2" />
+          <div className="space-y-3">
+            <Skeleton className="h-36 w-full rounded-lg" />
+            <Skeleton className="h-36 w-full rounded-lg" />
+          </div>
+        </div>
+      }
+    >
+      <PlanResultsContent />
+    </React.Suspense>
   );
 }

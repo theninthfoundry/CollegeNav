@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { globalLiveTrips } from "@/app/api/v1/live/trips/route";
+import { globalLiveTrips } from "@/server/live-store";
 
 const positionPointSchema = z.object({
   lat: z.number().min(-90).max(90),

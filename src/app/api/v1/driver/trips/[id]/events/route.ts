@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { globalLiveTrips } from "@/app/api/v1/live/trips/route";
+import { globalLiveTrips } from "@/server/live-store";
 import { adminRepository } from "@/server/repositories/admin.repository";
 
 const eventSchema = z.object({

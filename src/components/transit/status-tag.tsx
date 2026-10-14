@@ -4,29 +4,59 @@ import { cn } from "../ui/button";
 export type StatusTone = "ok" | "warn" | "crit" | "muted";
 
 export interface StatusTagProps {
-  label: string;
+  label?: string;
   tone?: StatusTone;
+  status?: "running" | "delayed" | "cancelled" | "scheduled" | "on_time";
+  delayMin?: number;
   className?: string;
 }
 
 export function StatusTag({
   label,
-  tone = "ok",
+  tone,
+  status,
+  delayMin,
   className,
 }: StatusTagProps) {
+  let finalLabel = label || "Scheduled";
+  let finalTone: StatusTone = tone || "muted";
+
+  if (status) {
+    switch (status) {
+      case "running":
+      case "on_time":
+        finalLabel = status === "running" ? "Running" : "On time";
+        finalTone = "ok";
+        break;
+      case "delayed":
+        finalLabel = delayMin ? `Delayed ${delayMin} min` : "Delayed";
+        finalTone = "warn";
+        break;
+      case "cancelled":
+        finalLabel = "Cancelled";
+        finalTone = "crit";
+        break;
+      case "scheduled":
+      default:
+        finalLabel = "Scheduled";
+        finalTone = "muted";
+        break;
+    }
+  }
+
   const toneStyles = {
     ok: "bg-ok-tint text-ok border-ok/20",
     warn: "bg-warn-tint text-warn border-warn/20",
     crit: "bg-crit-tint text-crit border-crit/20",
     muted: "bg-muted-tint text-muted border-muted/20",
-  }[tone];
+  }[finalTone];
 
   const dotStyles = {
     ok: "bg-ok",
     warn: "bg-warn",
     crit: "bg-crit",
     muted: "bg-muted",
-  }[tone];
+  }[finalTone];
 
   return (
     <span

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { globalLiveTrips } from "@/app/api/v1/live/trips/route";
+import { globalLiveTrips } from "@/server/live-store";
 
 export async function POST(
   req: NextRequest,
