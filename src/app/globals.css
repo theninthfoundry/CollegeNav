@@ -1,9 +1,9 @@
 @import "../styles/tokens.css";
 @import "maplibre-gl/dist/maplibre-gl.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   * {
