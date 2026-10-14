@@ -167,6 +167,46 @@ export function PlacePickerSheet({
             </button>
           )}
         </div>
+
+        {/* Quick category filter pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-2.5 text-xs">
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            className={`px-2.5 py-1 rounded-full shrink-0 font-medium transition-colors ${
+              !query ? "bg-ink text-paper" : "bg-paper border border-line text-ink-2 hover:bg-neutral-100"
+            }`}
+          >
+            All Stops
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuery("Metro")}
+            className={`px-2.5 py-1 rounded-full shrink-0 font-medium transition-colors ${
+              query === "Metro" ? "bg-ink text-paper" : "bg-paper border border-line text-ink-2 hover:bg-neutral-100"
+            }`}
+          >
+            Metro Stations
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuery("Colony")}
+            className={`px-2.5 py-1 rounded-full shrink-0 font-medium transition-colors ${
+              query === "Colony" ? "bg-ink text-paper" : "bg-paper border border-line text-ink-2 hover:bg-neutral-100"
+            }`}
+          >
+            Colonies
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuery("Campus")}
+            className={`px-2.5 py-1 rounded-full shrink-0 font-medium transition-colors ${
+              query === "Campus" ? "bg-accent text-white" : "bg-accent/10 text-accent border border-accent/20"
+            }`}
+          >
+            Campus Hub
+          </button>
+        </div>
       </div>
 
       {/* Body List */}

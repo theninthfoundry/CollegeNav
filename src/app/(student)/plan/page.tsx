@@ -12,9 +12,9 @@ import { api } from "@/lib/api";
 import { JourneyOption, PlanResult } from "@/domain/types";
 
 function PlanResultsContent() {
-  const searchParams = useSearchParams();
-  const fromParam = searchParams.get("from") || "";
-  const toParam = searchParams.get("to") || undefined;
+  const rawFromParam = searchParams.get("from");
+  const fromParam = rawFromParam || "10000000-0000-0000-0000-000000000002";
+  const toParam = searchParams.get("to") || "10000000-0000-0000-0000-000000000000";
   const mode = searchParams.get("mode") || "now";
   const at = searchParams.get("at") || undefined;
   const walkMax = searchParams.get("walk_max");
@@ -24,9 +24,9 @@ function PlanResultsContent() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [mobileView, setMobileView] = React.useState<"list" | "map">("list");
+  const [sortFilter, setSortFilter] = React.useState<"recommended" | "fastest" | "least_walk">("recommended");
 
   React.useEffect(() => {
-    if (!fromParam) return;
     let isMounted = true;
     setLoading(true);
 
@@ -83,7 +83,23 @@ function PlanResultsContent() {
   }
 
   const { options, reason, nearest_origin_stop, suggestion } = result;
-  const selectedOption = options.find((opt) => opt.id === selectedId) || options[0];
+
+  const sortedOptions = React.useMemo(() => {
+    if (sortFilter === "fastest") {
+      return [...options].sort((a, b) => a.total_min - b.total_min);
+    }
+    if (sortFilter === "least_walk") {
+      return [...options].sort(
+        (a, b) =>
+          a.walk_to_board.meters +
+          a.walk_from_alight.meters -
+          (b.walk_to_board.meters + b.walk_from_alight.meters)
+      );
+    }
+    return options;
+  }, [options, sortFilter]);
+
+  const selectedOption = sortedOptions.find((opt) => opt.id === selectedId) || sortedOptions[0];
 
   // Stops for map view from option
   const mapStops = selectedOption
@@ -150,6 +166,68 @@ function PlanResultsContent() {
           <p className="text-sm text-ink-3 mt-1 capitalize">
             Mode: {mode === "now" ? "Leave now" : mode === "depart" ? "Leave at" : "Arrive by"}
           </p>
+
+          {/* Quick origin change chips for rapid switching */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pt-2.5 pb-0.5 text-xs">
+            <span className="text-ink-4 shrink-0 font-medium">Origin:</span>
+            {[
+              { id: "10000000-0000-0000-0000-000000000002", label: "KPHB" },
+              { id: "10000000-0000-0000-0000-000000000001", label: "Miyapur" },
+              { id: "10000000-0000-0000-0000-000000000003", label: "JNTU" },
+              { id: "10000000-0000-0000-0000-000000000006", label: "Secunderabad" },
+            ].map((st) => (
+              <Link
+                key={st.id}
+                href={`/plan?from=${st.id}&to=10000000-0000-0000-0000-000000000000&mode=${mode}`}
+                className={`px-2.5 py-1 rounded-full font-medium transition-colors shrink-0 ${
+                  fromParam === st.id
+                    ? "bg-accent-tint text-accent border border-accent/30 font-semibold"
+                    : "bg-surface-2 hover:bg-neutral-200 text-ink"
+                }`}
+              >
+                {st.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Quick Filter Pills */}
+          {options.length > 1 && (
+            <div className="flex items-center gap-1.5 pt-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setSortFilter("recommended")}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+                  sortFilter === "recommended"
+                    ? "bg-ink text-paper"
+                    : "bg-paper border border-line text-ink-2 hover:bg-neutral-100"
+                }`}
+              >
+                Recommended
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortFilter("fastest")}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+                  sortFilter === "fastest"
+                    ? "bg-ink text-paper"
+                    : "bg-paper border border-line text-ink-2 hover:bg-neutral-100"
+                }`}
+              >
+                Fastest Ride
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortFilter("least_walk")}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+                  sortFilter === "least_walk"
+                    ? "bg-ink text-paper"
+                    : "bg-paper border border-line text-ink-2 hover:bg-neutral-100"
+                }`}
+              >
+                Least Walking
+              </button>
+            </div>
+          )}
         </div>
 
         {/* S3b: No results explanation */}
@@ -178,16 +256,14 @@ function PlanResultsContent() {
             </div>
 
             <div className="pt-2 flex flex-wrap gap-2.5">
-              {nearest_origin_stop && (
-                <Link href={`/stops/${nearest_origin_stop.stop.id}`}>
-                  <Button variant="secondary" size="sm">
-                    Show {nearest_origin_stop.stop.name}
-                  </Button>
-                </Link>
-              )}
-              <Link href={`/plan?from=${fromParam}&walk_max=1500&mode=${mode}`}>
+              <Link href="/plan?from=10000000-0000-0000-0000-000000000002&to=10000000-0000-0000-0000-000000000000">
+                <Button variant="primary" size="sm">
+                  Try KPHB Express to Campus
+                </Button>
+              </Link>
+              <Link href="/plan?from=10000000-0000-0000-0000-000000000001&to=10000000-0000-0000-0000-000000000000">
                 <Button variant="secondary" size="sm">
-                  Widen walk to 1.5 km
+                  Try Miyapur Shuttle
                 </Button>
               </Link>
             </div>
@@ -195,9 +271,9 @@ function PlanResultsContent() {
         )}
 
         {/* S3: Ranked journey option cards */}
-        {options.length > 0 && (
+        {sortedOptions.length > 0 && (
           <div className={`space-y-3 ${mobileView === "map" ? "hidden md:block" : "block"}`}>
-            {options.map((opt) => (
+            {sortedOptions.map((opt) => (
               <div key={opt.id}>
                 <JourneyCard
                   option={opt}

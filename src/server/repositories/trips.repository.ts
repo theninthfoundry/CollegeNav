@@ -7,24 +7,47 @@ import { expandTrips, formatKolkataTime } from "@/domain/time";
 import { computeFreshness } from "@/domain/freshness";
 
 export const SEEDED_TRIPS: TripLike[] = [
-  // R1
+  // R1: Miyapur to Campus
   { id: "30000000-0000-0000-0000-000000000001", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "07:00", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000002", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "07:45", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000003", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "08:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000020", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "09:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000021", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "10:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000022", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "11:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000023", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "12:15", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000024", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "13:00", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000025", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "14:00", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000026", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "15:00", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000027", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "16:00", days: 63, is_active: true },
+  // R1: From campus
+  { id: "30000000-0000-0000-0000-000000000028", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "11:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000029", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "13:00", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000030", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "15:00", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000004", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "16:30", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000005", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "17:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000031", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "18:30", days: 63, is_active: true },
 
-  // R2
+  // R2: Secunderabad to Campus
   { id: "30000000-0000-0000-0000-000000000006", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "06:45", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000007", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "07:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000032", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "08:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000033", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "10:00", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000034", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "11:45", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000035", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "12:30", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000036", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "14:15", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000008", route_id: "20000000-0000-0000-0000-000000000002", direction: "from_campus", depart_time: "16:45", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000037", route_id: "20000000-0000-0000-0000-000000000002", direction: "from_campus", depart_time: "17:45", days: 63, is_active: true },
 
-  // R3
+  // R3: Uppal and Dilsukhnagar to Campus
   { id: "30000000-0000-0000-0000-000000000009", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "06:30", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000010", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "07:15", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000038", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "08:15", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000039", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "10:15", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000040", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "12:00", days: 63, is_active: true },
+  { id: "30000000-0000-0000-0000-000000000041", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "14:00", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000011", route_id: "20000000-0000-0000-0000-000000000003", direction: "from_campus", depart_time: "16:30", days: 63, is_active: true },
 
-  // R4
+  // R4: Gachibowli to Campus (currently suspended route in seed, kept for completeness)
   { id: "30000000-0000-0000-0000-000000000012", route_id: "20000000-0000-0000-0000-000000000004", direction: "to_campus", depart_time: "07:30", days: 63, is_active: true },
   { id: "30000000-0000-0000-0000-000000000013", route_id: "20000000-0000-0000-0000-000000000004", direction: "from_campus", depart_time: "17:00", days: 63, is_active: true },
 ];
@@ -116,11 +139,30 @@ export async function getTripInstances(serviceDate: string): Promise<TripInstanc
     // Fallback
   }
 
-  // Simulated running trip on R1 today
+  // Simulated running trip on R1 and R2 for today
+  // Find R1 trip closest to current time so there's always an active or imminent trip
+  const now = new Date();
+  const kolkataOffsetMs = 5.5 * 3600 * 1000;
+  const kolkataNow = new Date(now.getTime() + kolkataOffsetMs);
+  const nowMin = kolkataNow.getUTCHours() * 60 + kolkataNow.getUTCMinutes();
+
+  const r1Trips = SEEDED_TRIPS.filter((t) => t.route_id === "20000000-0000-0000-0000-000000000001" && t.direction === "to_campus");
+  let activeR1Trip = r1Trips[0];
+  let minDiff = Infinity;
+  for (const t of r1Trips) {
+    const [h, m] = t.depart_time.split(":").map(Number);
+    const tripMin = h * 60 + m;
+    const diff = Math.abs(tripMin - nowMin);
+    if (diff < minDiff) {
+      minDiff = diff;
+      activeR1Trip = t;
+    }
+  }
+
   return [
     {
       id: "40000000-0000-0000-0000-000000000002",
-      trip_id: "30000000-0000-0000-0000-000000000002",
+      trip_id: activeR1Trip.id,
       service_date: serviceDate,
       status: "running",
       delay_min: 0,
@@ -128,6 +170,18 @@ export async function getTripInstances(serviceDate: string): Promise<TripInstanc
       last_position_at: new Date(Date.now() - 10000).toISOString(),
       last_progress_m: 12000,
       last_speed_mps: 8,
+    },
+    {
+      id: "40000000-0000-0000-0000-000000000003",
+      trip_id: "30000000-0000-0000-0000-000000000034",
+      service_date: serviceDate,
+      status: "scheduled",
+      delay_min: 4,
+      delay_source: "manual",
+      started_at: null,
+      last_position_at: null,
+      last_progress_m: null,
+      last_speed_mps: null,
     },
   ];
 }
