@@ -4,20 +4,10 @@ import { eq, sql } from "drizzle-orm";
 import { haversineDistanceMeters } from "@/domain/geo";
 import { StopLike } from "@/domain/types";
 
-// Seeded fallback stops matching docs/07 section 7
-export const SEEDED_STOPS: (StopLike & { landmark?: string; step_free?: boolean; aliases?: string[] })[] = [
-  { id: "10000000-0000-0000-0000-000000000000", code: "CMP", name: "Main Campus", lat: 17.54, lng: 78.38, landmark: "College Administrative Block", step_free: true, is_campus: true, is_active: true },
-  { id: "10000000-0000-0000-0000-000000000001", code: "MYP", name: "Miyapur", lat: 17.4969, lng: 78.3548, landmark: "Near Miyapur Metro Station", step_free: true, is_campus: false, is_active: true, aliases: ["Miyapur Metro"] },
-  { id: "10000000-0000-0000-0000-000000000002", code: "KPHB", name: "Kukatpally Housing Board", lat: 17.4948, lng: 78.3996, landmark: "Near KPHB Colony Gate 2", step_free: true, is_campus: false, is_active: true, aliases: ["Kukatpally", "KPHB Colony"] },
-  { id: "10000000-0000-0000-0000-000000000003", code: "JNTU", name: "JNTU Metro", lat: 17.4933, lng: 78.3914, landmark: "Opposite JNTU College Gate", step_free: true, is_campus: false, is_active: true, aliases: ["JNTUH"] },
-  { id: "10000000-0000-0000-0000-000000000004", code: "AMP", name: "Ameerpet", lat: 17.4375, lng: 78.4483, landmark: "Ameerpet Metro Interchange", step_free: true, is_campus: false, is_active: true, aliases: ["Ameerpet Cross Roads"] },
-  { id: "10000000-0000-0000-0000-000000000005", code: "GCB", name: "Gachibowli", lat: 17.4401, lng: 78.3489, landmark: "Gachibowli Stadium Circle", step_free: false, is_campus: false, is_active: true },
-  { id: "10000000-0000-0000-0000-000000000006", code: "SEC", name: "Secunderabad Station", lat: 17.4344, lng: 78.5013, landmark: "Secunderabad East Metro", step_free: true, is_campus: false, is_active: true, aliases: ["Secunderabad"] },
-  { id: "10000000-0000-0000-0000-000000000007", code: "UPL", name: "Uppal", lat: 17.4058, lng: 78.5591, landmark: "Uppal Ring Road Circle", step_free: false, is_campus: false, is_active: true },
-  { id: "10000000-0000-0000-0000-000000000008", code: "DSN", name: "Dilsukhnagar", lat: 17.3688, lng: 78.5247, landmark: "Dilsukhnagar Bus Depot", step_free: true, is_campus: false, is_active: true },
-  { id: "10000000-0000-0000-0000-000000000009", code: "MEH", name: "Mehdipatnam", lat: 17.395, lng: 78.44, landmark: "Mehdipatnam Rythu Bazar", step_free: false, is_campus: false, is_active: true },
-  { id: "10000000-0000-0000-0000-000000000010", code: "LBN", name: "LB Nagar", lat: 17.3457, lng: 78.5522, landmark: "LB Nagar Metro Station", step_free: true, is_campus: false, is_active: true },
-];
+import { FLEET_STOPS } from "../bus-data";
+
+// Seeded fallback stops matching the 54 campus routes
+export const SEEDED_STOPS: (StopLike & { landmark?: string; step_free?: boolean; aliases?: string[] })[] = FLEET_STOPS;
 
 export async function getAllStops(): Promise<StopLike[]> {
   try {

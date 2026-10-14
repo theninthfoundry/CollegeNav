@@ -14,6 +14,7 @@ import {
   profiles,
 } from "@/server/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
+import { RAW_CAMPUS_BUS_ROUTES, FLEET_ROUTES, FLEET_DRIVERS } from "@/server/bus-data";
 
 export interface AuditEntry {
   id?: number;
@@ -24,6 +25,29 @@ export interface AuditEntry {
   summary: string;
   before?: any;
   after?: any;
+}
+
+export interface OperationTripItem {
+  id: string;
+  trip_id: string;
+  route_no: number;
+  route_code: string;
+  route_name: string;
+  direction: "to_campus" | "from_campus";
+  scheduled_time: string;
+  bus_reg: string;
+  driver_name: string;
+  driver_phone: string;
+  corridor: string;
+  origin: string;
+  destination: string;
+  status: "running" | "delayed" | "scheduled" | "cancelled";
+  delay_min: number;
+  tracking: "live" | "estimated" | "scheduled" | "not_tracked";
+  cancel_reason?: string;
+  delay_reason?: string;
+  stops_count: number;
+  next_stop?: string;
 }
 
 // In-memory fallback audit log for offline dev/demo
@@ -61,6 +85,62 @@ let inMemoryAuditLog: Array<{
     after: { title: "Route 3 diverted via Ring Road", severity: "warning" },
   },
 ];
+
+// In-memory operations state for all 54 routes initialized from official fleet data
+let inMemoryOperations: OperationTripItem[] = RAW_CAMPUS_BUS_ROUTES.map((raw) => {
+  const routeNo = raw.route_no;
+  let status: OperationTripItem["status"] = "scheduled";
+  let delayMin = 0;
+  let tracking: OperationTripItem["tracking"] = "scheduled";
+  let cancelReason: string | undefined = undefined;
+
+  if (routeNo === 4) {
+    status = "cancelled";
+    cancelReason = "Maintenance: Scheduled engine inspection";
+    tracking = "not_tracked";
+  } else if (routeNo === 3 || routeNo === 14 || routeNo === 28) {
+    status = "delayed";
+    delayMin = routeNo === 3 ? 12 : routeNo === 14 ? 8 : 15;
+    tracking = "live";
+  } else if (routeNo <= 25) {
+    status = "running";
+    tracking = "live";
+  } else if (routeNo <= 40) {
+    status = "running";
+    tracking = "live";
+  } else {
+    status = "scheduled";
+    tracking = "scheduled";
+  }
+
+  const origin = raw.stops && raw.stops.length > 0 ? raw.stops[0] : "Origin";
+  const nextStop =
+    raw.stops && raw.stops.length > 2
+      ? raw.stops[Math.min(2, raw.stops.length - 1)]
+      : raw.stops[1] || "College Campus";
+
+  return {
+    id: `inst-op-${routeNo}`,
+    trip_id: `trip-r${routeNo}-1`,
+    route_no: routeNo,
+    route_code: raw.code,
+    route_name: `${origin} to Campus`,
+    direction: "to_campus",
+    scheduled_time: `${raw.depart_time} AM`,
+    bus_reg: `TS09 UB ${1000 + routeNo}`,
+    driver_name: raw.driver_name,
+    driver_phone: raw.driver_phone,
+    corridor: raw.corridor,
+    origin,
+    destination: "College Campus",
+    status,
+    delay_min: delayMin,
+    tracking,
+    cancel_reason: cancelReason,
+    stops_count: raw.stops ? raw.stops.length : 0,
+    next_stop: nextStop,
+  };
+});
 
 export const adminRepository = {
   // Record audit log
@@ -125,69 +205,39 @@ export const adminRepository = {
 
   // Get Dashboard stats
   async getDashboard() {
+    const running = inMemoryOperations.filter((t) => t.status === "running").length;
+    const delayed = inMemoryOperations.filter((t) => t.status === "delayed").length;
+    const live = inMemoryOperations.filter((t) => t.tracking === "live").length;
+
     return {
-      running_trips: 4,
-      live_buses: 3,
+      total_routes: 54,
+      running_trips: running,
+      live_buses: live,
       active_notices: 2,
-      routes_needing_verification: 1,
-      trips_today: [
-        {
-          id: "trip-inst-1",
-          time: "07:00",
-          route_code: "R1",
-          route_name: "Miyapur to Campus",
-          bus_reg: "TS09 UB 1001",
-          driver_name: "Ravi Kumar",
-          status: "running",
-          tracking: "live",
-          delay_min: 0,
-        },
-        {
-          id: "trip-inst-2",
-          time: "07:15",
-          route_code: "R2",
-          route_name: "Kukatpally to Campus",
-          bus_reg: "TS09 UB 1002",
-          driver_name: "Suresh Reddy",
-          status: "running",
-          tracking: "live",
-          delay_min: 4,
-        },
-        {
-          id: "trip-inst-3",
-          time: "07:30",
-          route_code: "R3",
-          route_name: "Secunderabad Express",
-          bus_reg: "TS09 UB 1003",
-          driver_name: "Mohan Lal",
-          status: "delayed",
-          tracking: "stale",
-          delay_min: 12,
-        },
-        {
-          id: "trip-inst-4",
-          time: "08:00",
-          route_code: "R4",
-          route_name: "Gachibowli Shuttle",
-          bus_reg: "TS09 UB 1004",
-          driver_name: "Venkatesh",
-          status: "scheduled",
-          tracking: "not_tracked",
-          delay_min: 0,
-        },
-      ],
+      routes_needing_verification: 2,
+      trips_today: inMemoryOperations.slice(0, 8).map((op) => ({
+        id: op.id,
+        time: op.scheduled_time.replace(" AM", ""),
+        route_code: op.route_code,
+        route_name: op.route_name,
+        bus_reg: op.bus_reg,
+        driver_name: op.driver_name,
+        status: op.status,
+        tracking: op.tracking,
+        delay_min: op.delay_min,
+      })),
       routes_status: [
         {
           id: "20000000-0000-0000-0000-000000000003",
           code: "R3",
-          name: "Secunderabad Express",
+          name: "Indira Park to Campus",
           last_verified: "14 days ago",
           freshness: "aging",
         },
         {
-          id: "20000000-0000-0000-0000-000000000004",
-          code: "R4",
-          name: "Gachibowli Shuttle",
+          id: "20000000-0000-0000-0000-000000000021",
+          code: "R21",
+          name: "Niranjan to Campus",
           last_verified: "52 days ago",
           freshness: "outdated",
         },
@@ -195,69 +245,26 @@ export const adminRepository = {
     };
   },
 
-  // Today's Operations
-  async getOperationsToday() {
-    return [
-      {
-        id: "inst-op-1",
-        trip_id: "trip-r1-1",
-        route_code: "R1",
-        direction: "to_campus",
-        scheduled_time: "07:00 am",
-        bus_reg: "TS09 UB 1001",
-        driver_name: "Ravi Kumar",
-        status: "running",
-        delay_min: 0,
-        tracking: "live",
-      },
-      {
-        id: "inst-op-2",
-        trip_id: "trip-r2-1",
-        route_code: "R2",
-        direction: "to_campus",
-        scheduled_time: "07:15 am",
-        bus_reg: "TS09 UB 1002",
-        driver_name: "Suresh Reddy",
-        status: "delayed",
-        delay_min: 8,
-        tracking: "live",
-      },
-      {
-        id: "inst-op-3",
-        trip_id: "trip-r3-1",
-        route_code: "R3",
-        direction: "to_campus",
-        scheduled_time: "07:30 am",
-        bus_reg: "TS09 UB 1003",
-        driver_name: "Mohan Lal",
-        status: "scheduled",
-        delay_min: 0,
-        tracking: "scheduled",
-      },
-      {
-        id: "inst-op-4",
-        trip_id: "trip-r4-1",
-        route_code: "R4",
-        direction: "to_campus",
-        scheduled_time: "08:00 am",
-        bus_reg: "TS09 UB 1004",
-        driver_name: "Venkatesh",
-        status: "cancelled",
-        delay_min: 0,
-        tracking: "not_tracked",
-        cancel_reason: "Bus engine maintenance",
-      },
-    ];
+  // Today's Operations for all 54 routes
+  async getOperationsToday(): Promise<OperationTripItem[]> {
+    return [...inMemoryOperations];
   },
 
   // Cancel trip instance
   async cancelTrip(id: string, reason: string, notify: boolean, actorId?: string) {
+    const target = inMemoryOperations.find((t) => t.id === id);
+    if (target) {
+      target.status = "cancelled";
+      target.cancel_reason = reason;
+      target.tracking = "not_tracked";
+    }
+
     await this.recordAudit({
       actorId,
       action: "cancel_trip",
       entity: "trip_instance",
       entityId: id,
-      summary: `Cancelled trip instance ${id}: ${reason}`,
+      summary: `Cancelled trip instance ${id} (${target?.route_code || "Fleet"}): ${reason}`,
       before: { status: "scheduled" },
       after: { status: "cancelled", reason, notify },
     });
@@ -266,12 +273,20 @@ export const adminRepository = {
 
   // Delay trip instance
   async delayTrip(id: string, delayMin: number, reason: string, notify: boolean, actorId?: string) {
+    const target = inMemoryOperations.find((t) => t.id === id);
+    if (target) {
+      target.status = "delayed";
+      target.delay_min = delayMin;
+      target.delay_reason = reason;
+      target.tracking = "live";
+    }
+
     await this.recordAudit({
       actorId,
       action: "delay_trip",
       entity: "trip_instance",
       entityId: id,
-      summary: `Delayed trip instance ${id} by ${delayMin} min: ${reason}`,
+      summary: `Delayed trip instance ${id} (${target?.route_code || "Fleet"}) by ${delayMin} min: ${reason}`,
       before: { delay_min: 0 },
       after: { delay_min: delayMin, reason, notify },
     });

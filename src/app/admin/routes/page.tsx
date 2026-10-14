@@ -28,6 +28,8 @@ export default function AdminRoutesPage() {
   const [showDiffModal, setShowDiffModal] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const loadRoutes = () => {
     setLoading(true);
     fetch("/api/v1/routes")
@@ -46,19 +48,39 @@ export default function AdminRoutesPage() {
     loadRoutes();
   }, []);
 
-  const openEditor = (r: any) => {
+  const openEditor = async (r: any) => {
     setSelectedRoute(r);
     setRouteName(r.name);
     setRouteCode(r.code);
     setIsEditing(true);
 
-    // Seed realistic stop sequence for route
+    try {
+      const res = await fetch(`/api/v1/routes/${encodeURIComponent(r.code)}`);
+      const data = await res.json();
+      const dirStops = data.directions?.[0]?.stops || [];
+      if (dirStops.length > 0) {
+        setStopsList(
+          dirStops.map((s: any) => ({
+            id: s.stop?.id || `stop-${s.seq}`,
+            name: s.stop?.name || `Stop ${s.seq}`,
+            code: s.stop?.code || `S${s.seq}`,
+            offset_min: s.offset_min,
+            lat: s.stop?.lat || 17.385,
+            lng: s.stop?.lng || 78.486,
+          }))
+        );
+        return;
+      }
+    } catch {
+      // fallback
+    }
+
+    // Default stops if route stops fetch fails
+    const origin = r.name ? r.name.split(" to ")[0] : "Origin";
     setStopsList([
-      { id: "1", name: "Miyapur Cross Roads", code: "MYP", offset_min: 0, lat: 17.4948, lng: 78.3996 },
-      { id: "2", name: "Kukatpally Housing Board", code: "KPHB", offset_min: 12, lat: 17.4955, lng: 78.402 },
-      { id: "3", name: "JNTU College Metro", code: "JNTU", offset_min: 22, lat: 17.501, lng: 78.411 },
-      { id: "4", name: "Nizampet X Road", code: "NZP", offset_min: 35, lat: 17.518, lng: 78.435 },
-      { id: "5", name: "Main Campus Central Terminus", code: "CAMPUS", offset_min: 55, lat: 17.5449, lng: 78.5718 },
+      { id: "1", name: origin, code: "ORIGIN", offset_min: 0, lat: 17.4948, lng: 78.3996 },
+      { id: "2", name: "Intermediate Transit Point", code: "MID", offset_min: 25, lat: 17.385, lng: 78.486 },
+      { id: "3", name: "College Campus Central Terminus", code: "CAMPUS", offset_min: 55, lat: 17.205, lng: 78.625 },
     ]);
   };
 
@@ -137,34 +159,51 @@ export default function AdminRoutesPage() {
         </div>
       )}
 
-      {/* Mode 1: Routes List Table */}
+      {/* Mode 1: Routes List with Search & Responsive Layout */}
       {!isEditing && (
-        <div className="border border-line rounded-xl bg-paper overflow-hidden">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50/70 border-b border-line text-xs font-semibold text-ink-3 uppercase tracking-wider">
-              <tr>
-                <th className="py-3 px-4">Route</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Coverage</th>
-                <th className="py-3 px-4">Freshness</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {routes.map((r) => (
-                <tr key={r.id} className="hover:bg-neutral-50/50 transition-colors">
-                  <td className="py-3.5 px-4">
-                    <RouteBadge code={r.code} size="md" />
-                  </td>
-                  <td className="py-3.5 px-4 font-medium text-ink">{r.name}</td>
-                  <td className="py-3.5 px-4 text-xs text-ink-3">To campus &bull; From campus</td>
-                  <td className="py-3.5 px-4">
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <div className="bg-paper border border-line rounded-xl p-3 flex items-center justify-between gap-3">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search 54 routes by code (e.g. R1, R15) or area..."
+              className="w-full h-10 px-3 text-sm border border-line rounded-lg text-ink placeholder:text-ink-3 bg-neutral-50/50 focus:bg-paper focus:outline-accent"
+            />
+            <div className="text-xs text-ink-3 font-mono whitespace-nowrap hidden sm:block">
+              {routes.filter((r) => !searchQuery.trim() || r.code.toLowerCase().includes(searchQuery.toLowerCase()) || r.name.toLowerCase().includes(searchQuery.toLowerCase())).length} of {routes.length} routes
+            </div>
+          </div>
+
+          {/* Mobile Card Layout (< 768px) */}
+          <div className="block md:hidden space-y-3">
+            {routes
+              .filter(
+                (r) =>
+                  !searchQuery.trim() ||
+                  r.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  r.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((r) => (
+                <div
+                  key={r.id}
+                  className="bg-paper border border-line rounded-xl p-4 space-y-3 shadow-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <RouteBadge code={r.code} size="md" />
+                      <div>
+                        <div className="font-semibold text-ink text-sm">{r.name}</div>
+                        <div className="text-xs text-ink-3">To campus &bull; From campus</div>
+                      </div>
+                    </div>
                     <FreshnessTag freshness={r.freshness} />
-                  </td>
-                  <td className="py-3.5 px-4">
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-line text-xs">
                     <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium uppercase font-mono ${
+                      className={`px-2 py-0.5 rounded text-[11px] font-medium uppercase font-mono ${
                         r.status === "active"
                           ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                           : "bg-red-50 text-red-800 border border-red-200"
@@ -172,27 +211,91 @@ export default function AdminRoutesPage() {
                     >
                       {r.status}
                     </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSuspend(r)}
-                      className="px-2.5 py-1 text-xs font-semibold text-ink-2 hover:bg-neutral-100 rounded border border-line"
-                    >
-                      {r.status === "suspended" ? "Resume" : "Suspend"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openEditor(r)}
-                      className="px-3 py-1 text-xs font-semibold text-accent bg-accent/10 hover:bg-accent/20 rounded border border-accent/20"
-                    >
-                      Edit Route
-                    </button>
-                  </td>
-                </tr>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSuspend(r)}
+                        className="px-3 py-1.5 text-xs font-semibold text-ink-2 hover:bg-neutral-100 rounded-lg border border-line min-h-[38px]"
+                      >
+                        {r.status === "suspended" ? "Resume" : "Suspend"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openEditor(r)}
+                        className="px-3.5 py-1.5 text-xs font-semibold text-accent bg-accent/10 hover:bg-accent/20 rounded-lg border border-accent/20 min-h-[38px]"
+                      >
+                        Edit Route
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+          </div>
+
+          {/* Desktop Table View (>= 768px) */}
+          <div className="hidden md:block border border-line rounded-xl bg-paper overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-neutral-50/70 border-b border-line text-xs font-semibold text-ink-3 uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4">Route</th>
+                  <th className="py-3 px-4">Name</th>
+                  <th className="py-3 px-4">Coverage</th>
+                  <th className="py-3 px-4">Freshness</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {routes
+                  .filter(
+                    (r) =>
+                      !searchQuery.trim() ||
+                      r.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      r.name.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                  .map((r) => (
+                    <tr key={r.id} className="hover:bg-neutral-50/50 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <RouteBadge code={r.code} size="md" />
+                      </td>
+                      <td className="py-3.5 px-4 font-medium text-ink">{r.name}</td>
+                      <td className="py-3.5 px-4 text-xs text-ink-3">To campus &bull; From campus</td>
+                      <td className="py-3.5 px-4">
+                        <FreshnessTag freshness={r.freshness} />
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-medium uppercase font-mono ${
+                            r.status === "active"
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                              : "bg-red-50 text-red-800 border border-red-200"
+                          }`}
+                        >
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSuspend(r)}
+                          className="px-2.5 py-1 text-xs font-semibold text-ink-2 hover:bg-neutral-100 rounded border border-line"
+                        >
+                          {r.status === "suspended" ? "Resume" : "Suspend"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openEditor(r)}
+                          className="px-3 py-1 text-xs font-semibold text-accent bg-accent/10 hover:bg-accent/20 rounded border border-accent/20"
+                        >
+                          Edit Route
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

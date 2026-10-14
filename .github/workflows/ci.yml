@@ -1,0 +1,42 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    name: Typecheck, Test and Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: TypeScript typecheck
+        run: pnpm typecheck
+
+      - name: Vitest domain logic tests
+        run: pnpm test
+
+      - name: Next.js production build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_MAPTILER_KEY: "mock_maptiler_key_for_ci"
+          NEXT_PUBLIC_APP_URL: "https://collegenav.campus.edu"
+          SUPABASE_SERVICE_ROLE_KEY: "mock_supabase_key_for_ci"

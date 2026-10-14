@@ -74,7 +74,8 @@ export default function DriverModePage() {
   // Load trips when session is active
   useEffect(() => {
     if (!session) return;
-    fetch("/api/v1/driver/today")
+    const routeCode = session.bus?.default_route_code || "R1";
+    fetch(`/api/v1/driver/today?route_code=${encodeURIComponent(routeCode)}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.trips) {

@@ -202,7 +202,78 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
 
-        <div className="border border-line rounded-xl bg-paper overflow-hidden">
+        {/* Mobile Trips Cards (< 768px) */}
+        <div className="block md:hidden space-y-3">
+          {data.trips_today.map((trip: any) => (
+            <div
+              key={trip.id}
+              className="bg-paper border border-line rounded-xl p-4 space-y-3 shadow-xs"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <RouteBadge code={trip.route_code} size="sm" />
+                  <span className="font-semibold text-ink text-sm">{trip.route_name}</span>
+                </div>
+                <span className="font-mono text-xs font-bold tabular-nums text-ink">
+                  {trip.time}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-ink-3">
+                <span className="font-mono">{trip.bus_reg}</span>
+                <span>Driver: {trip.driver_name}</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-line">
+                <div className="flex items-center gap-1.5">
+                  <StatusTag
+                    status={
+                      trip.status === "running"
+                        ? "running"
+                        : trip.status === "delayed"
+                        ? "delayed"
+                        : trip.status === "cancelled"
+                        ? "cancelled"
+                        : "scheduled"
+                    }
+                    delayMin={trip.delay_min}
+                  />
+                  <SourceLabel
+                    source={
+                      trip.tracking === "live"
+                        ? "live"
+                        : trip.tracking === "stale"
+                        ? "estimated"
+                        : "scheduled"
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    disabled={actionLoading === trip.id || trip.status === "cancelled"}
+                    onClick={() => handleQuickDelay(trip.id)}
+                    className="px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded border border-amber-200 transition-colors disabled:opacity-40 min-h-[36px]"
+                  >
+                    Delay
+                  </button>
+                  <button
+                    type="button"
+                    disabled={actionLoading === trip.id || trip.status === "cancelled"}
+                    onClick={() => handleQuickCancel(trip.id)}
+                    className="px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 rounded border border-red-200 transition-colors disabled:opacity-40 min-h-[36px]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View (>= 768px) */}
+        <div className="hidden md:block border border-line rounded-xl bg-paper overflow-hidden">
           <table className="w-full text-left text-sm">
             <thead className="bg-neutral-50/70 border-b border-line text-xs font-semibold text-ink-3 uppercase tracking-wider">
               <tr>

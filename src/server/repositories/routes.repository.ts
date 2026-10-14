@@ -7,83 +7,11 @@ import { computeFreshness } from "@/domain/freshness";
 const now = new Date();
 const daysAgo = (d: number) => new Date(now.getTime() - d * 86400000).toISOString();
 
-export const SEEDED_ROUTES: RouteLike[] = [
-  {
-    id: "20000000-0000-0000-0000-000000000001",
-    code: "R1",
-    name: "Miyapur to Campus",
-    color_index: 1,
-    status: "active",
-    status_reason: null,
-    valid_from: "2026-01-01",
-    valid_to: "2026-12-31",
-    verified_at: daysAgo(3),
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000002",
-    code: "R2",
-    name: "Secunderabad to Campus",
-    color_index: 2,
-    status: "active",
-    status_reason: null,
-    valid_from: "2026-01-01",
-    valid_to: "2026-12-31",
-    verified_at: daysAgo(30),
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000003",
-    code: "R3",
-    name: "Uppal and Dilsukhnagar to Campus",
-    color_index: 3,
-    status: "active",
-    status_reason: null,
-    valid_from: "2026-01-01",
-    valid_to: "2026-12-31",
-    verified_at: daysAgo(70),
-  },
-  {
-    id: "20000000-0000-0000-0000-000000000004",
-    code: "R4",
-    name: "Gachibowli to Campus",
-    color_index: 4,
-    status: "suspended",
-    status_reason: "Route suspended due to road widening near Gachibowli junction",
-    valid_from: "2026-01-01",
-    valid_to: "2026-12-31",
-    verified_at: daysAgo(10),
-  },
-];
+import { FLEET_ROUTES, FLEET_ROUTE_STOPS } from "../bus-data";
 
-export const SEEDED_ROUTE_STOPS: RouteStopLike[] = [
-  // R1 to campus: MYP (1) -> KPHB (2) -> JNTU (3) -> CMP (0)
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", seq: 1, stop_id: "10000000-0000-0000-0000-000000000001", offset_min: 0 },
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", seq: 2, stop_id: "10000000-0000-0000-0000-000000000002", offset_min: 12 },
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", seq: 3, stop_id: "10000000-0000-0000-0000-000000000003", offset_min: 25 },
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", seq: 4, stop_id: "10000000-0000-0000-0000-000000000000", offset_min: 55 },
-  // R1 from campus
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", seq: 1, stop_id: "10000000-0000-0000-0000-000000000000", offset_min: 0 },
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", seq: 2, stop_id: "10000000-0000-0000-0000-000000000003", offset_min: 30 },
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", seq: 3, stop_id: "10000000-0000-0000-0000-000000000002", offset_min: 43 },
-  { route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", seq: 4, stop_id: "10000000-0000-0000-0000-000000000001", offset_min: 55 },
+export const SEEDED_ROUTES: (RouteLike & { stop_count: number; driver_name?: string; driver_phone?: string; bus_reg?: string; corridor?: string })[] = FLEET_ROUTES;
 
-  // R2 to campus: SEC (6) -> AMP (4) -> KPHB (2) -> CMP (0)
-  { route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", seq: 1, stop_id: "10000000-0000-0000-0000-000000000006", offset_min: 0 },
-  { route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", seq: 2, stop_id: "10000000-0000-0000-0000-000000000004", offset_min: 20 },
-  { route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", seq: 3, stop_id: "10000000-0000-0000-0000-000000000002", offset_min: 45 },
-  { route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", seq: 4, stop_id: "10000000-0000-0000-0000-000000000000", offset_min: 80 },
-
-  // R3 to campus: UPL (7) -> DSN (8) -> MEH (9) -> AMP (4) -> CMP (0)
-  { route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", seq: 1, stop_id: "10000000-0000-0000-0000-000000000007", offset_min: 0 },
-  { route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", seq: 2, stop_id: "10000000-0000-0000-0000-000000000008", offset_min: 15 },
-  { route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", seq: 3, stop_id: "10000000-0000-0000-0000-000000000009", offset_min: 35 },
-  { route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", seq: 4, stop_id: "10000000-0000-0000-0000-000000000004", offset_min: 50 },
-  { route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", seq: 5, stop_id: "10000000-0000-0000-0000-000000000000", offset_min: 90 },
-
-  // R4 to campus: GCB (5) -> JNTU (3) -> CMP (0)
-  { route_id: "20000000-0000-0000-0000-000000000004", direction: "to_campus", seq: 1, stop_id: "10000000-0000-0000-0000-000000000005", offset_min: 0 },
-  { route_id: "20000000-0000-0000-0000-000000000004", direction: "to_campus", seq: 2, stop_id: "10000000-0000-0000-0000-000000000003", offset_min: 25 },
-  { route_id: "20000000-0000-0000-0000-000000000004", direction: "to_campus", seq: 3, stop_id: "10000000-0000-0000-0000-000000000000", offset_min: 60 },
-];
+export const SEEDED_ROUTE_STOPS: RouteStopLike[] = FLEET_ROUTE_STOPS;
 
 export async function getAllRoutes(): Promise<(RouteLike & { stop_count: number })[]> {
   try {

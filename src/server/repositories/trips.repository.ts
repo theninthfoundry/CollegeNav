@@ -6,51 +6,9 @@ import { SEEDED_STOPS } from "./stops.repository";
 import { expandTrips, formatKolkataTime } from "@/domain/time";
 import { computeFreshness } from "@/domain/freshness";
 
-export const SEEDED_TRIPS: TripLike[] = [
-  // R1: Miyapur to Campus
-  { id: "30000000-0000-0000-0000-000000000001", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "07:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000002", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "07:45", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000003", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "08:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000020", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "09:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000021", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "10:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000022", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "11:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000023", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "12:15", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000024", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "13:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000025", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "14:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000026", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "15:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000027", route_id: "20000000-0000-0000-0000-000000000001", direction: "to_campus", depart_time: "16:00", days: 63, is_active: true },
-  // R1: From campus
-  { id: "30000000-0000-0000-0000-000000000028", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "11:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000029", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "13:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000030", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "15:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000004", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "16:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000005", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "17:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000031", route_id: "20000000-0000-0000-0000-000000000001", direction: "from_campus", depart_time: "18:30", days: 63, is_active: true },
+import { FLEET_TRIPS } from "../bus-data";
 
-  // R2: Secunderabad to Campus
-  { id: "30000000-0000-0000-0000-000000000006", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "06:45", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000007", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "07:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000032", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "08:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000033", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "10:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000034", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "11:45", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000035", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "12:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000036", route_id: "20000000-0000-0000-0000-000000000002", direction: "to_campus", depart_time: "14:15", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000008", route_id: "20000000-0000-0000-0000-000000000002", direction: "from_campus", depart_time: "16:45", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000037", route_id: "20000000-0000-0000-0000-000000000002", direction: "from_campus", depart_time: "17:45", days: 63, is_active: true },
-
-  // R3: Uppal and Dilsukhnagar to Campus
-  { id: "30000000-0000-0000-0000-000000000009", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "06:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000010", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "07:15", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000038", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "08:15", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000039", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "10:15", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000040", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "12:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000041", route_id: "20000000-0000-0000-0000-000000000003", direction: "to_campus", depart_time: "14:00", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000011", route_id: "20000000-0000-0000-0000-000000000003", direction: "from_campus", depart_time: "16:30", days: 63, is_active: true },
-
-  // R4: Gachibowli to Campus (currently suspended route in seed, kept for completeness)
-  { id: "30000000-0000-0000-0000-000000000012", route_id: "20000000-0000-0000-0000-000000000004", direction: "to_campus", depart_time: "07:30", days: 63, is_active: true },
-  { id: "30000000-0000-0000-0000-000000000013", route_id: "20000000-0000-0000-0000-000000000004", direction: "from_campus", depart_time: "17:00", days: 63, is_active: true },
-];
+export const SEEDED_TRIPS: TripLike[] = FLEET_TRIPS;
 
 export async function getAllTrips(): Promise<TripLike[]> {
   try {
