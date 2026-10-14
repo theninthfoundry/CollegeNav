@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CollegeNav — Campus Bus Transit & Fleet Operations System</title>
   <meta name="description" content="Intelligent college bus navigation PWA and transport management system with 54 routes across Hyderabad and Twin Cities.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,6 +82,16 @@
       background: var(--accent-tint);
       color: var(--accent);
       border: 1px solid rgba(29, 78, 216, 0.2);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-nav-repo {
+      padding: 6px 12px;
+      font-size: 12px;
+      min-height: 36px;
     }
 
     /* Hero */
@@ -270,6 +280,19 @@
       filter: brightness(0.96);
     }
 
+    .badge-student {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .badge-admin {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .badge-driver {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
     /* Fleet Explorer */
     .fleet-box {
       background: var(--paper);
@@ -290,6 +313,16 @@
         align-items: center;
         justify-content: space-between;
       }
+    }
+    .fleet-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .fleet-subtitle {
+      font-size: 13px;
+      color: var(--ink-3);
     }
     .search-box {
       width: 100%;
@@ -350,6 +383,21 @@
     .phone-link:hover {
       text-decoration: underline;
     }
+    .td-time {
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .td-driver {
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .td-origin {
+      font-weight: 500;
+    }
+    .td-stops {
+      font-size: 12px;
+      color: var(--ink-3);
+    }
 
     /* Footer */
     footer {
@@ -381,8 +429,8 @@
         <span class="brand-title">CollegeNav</span>
         <span class="badge-pill">Twin Cities Fleet</span>
       </a>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <a href="https://github.com/theninthfoundry/CollegeNav" target="_blank" class="btn-portal" style="padding: 6px 12px; font-size: 12px; min-height: 36px;">
+      <div class="nav-actions">
+        <a href="https://github.com/theninthfoundry/CollegeNav" target="_blank" rel="noopener noreferrer" class="btn-portal btn-nav-repo">
           GitHub Repo
         </a>
       </div>
@@ -409,7 +457,7 @@
           CollegeNav is a fullstack Next.js application (React 19, GPS telemetry, API endpoints, and day-of admin interventions). Connect your GitHub repository to Vercel for 1-click cloud deployment.
         </div>
       </div>
-      <a href="https://vercel.com/new/clone?repository-url=https://github.com/theninthfoundry/CollegeNav" target="_blank" class="btn-vercel">
+      <a href="https://vercel.com/new/clone?repository-url=https://github.com/theninthfoundry/CollegeNav" target="_blank" rel="noopener noreferrer" class="btn-vercel">
         Deploy to Vercel &rarr;
       </a>
     </div>
@@ -422,7 +470,7 @@
         <div>
           <div class="portal-header">
             <span class="portal-icon">🎓</span>
-            <span class="badge-pill" style="background: #eff6ff; color: #1d4ed8;">Student</span>
+            <span class="badge-pill badge-student">Student</span>
           </div>
           <div class="portal-title">Student Commute Hub</div>
           <p class="portal-desc">
@@ -437,7 +485,7 @@
         <div>
           <div class="portal-header">
             <span class="portal-icon">🛠️</span>
-            <span class="badge-pill" style="background: #fef3c7; color: #b45309;">Operations</span>
+            <span class="badge-pill badge-admin">Operations</span>
           </div>
           <div class="portal-title">Day-of Operations</div>
           <p class="portal-desc">
@@ -452,7 +500,7 @@
         <div>
           <div class="portal-header">
             <span class="portal-icon">🚌</span>
-            <span class="badge-pill" style="background: #ecfdf5; color: #047857;">Driver Mode</span>
+            <span class="badge-pill badge-driver">Driver Mode</span>
           </div>
           <div class="portal-title">Driver Navigation Cockpit</div>
           <p class="portal-desc">
@@ -468,10 +516,10 @@
     <div class="fleet-box">
       <div class="fleet-header">
         <div>
-          <h2 style="font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; margin-bottom: 2px;">
+          <h2 class="fleet-title">
             Twin Cities Corridor Coverage
           </h2>
-          <p style="font-size: 13px; color: var(--ink-3);">
+          <p class="fleet-subtitle">
             54 exclusive buses connecting urban localities to College Campus (Arrival 08:25 AM).
           </p>
         </div>
@@ -566,11 +614,11 @@
       tbody.innerHTML = data.map(item => `
         <tr>
           <td><span class="route-chip">${item.r}</span></td>
-          <td class="tabular-nums" style="font-weight: 600; color: var(--ink);">${item.time}</td>
-          <td style="font-weight: 500; color: var(--ink);">${item.driver}</td>
+          <td class="tabular-nums td-time">${item.time}</td>
+          <td class="td-driver">${item.driver}</td>
           <td><a href="tel:${item.phone}" class="phone-link tabular-nums">${item.phone}</a></td>
-          <td style="font-weight: 500;">${item.origin}</td>
-          <td style="font-size: 12px; color: var(--ink-3);">${item.stops}</td>
+          <td class="td-origin">${item.origin}</td>
+          <td class="td-stops">${item.stops}</td>
         </tr>
       `).join("");
     }
