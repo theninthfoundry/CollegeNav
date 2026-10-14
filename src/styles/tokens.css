@@ -1,0 +1,56 @@
+:root {
+  --paper: #ffffff;
+  --surface-1: #fafafa;
+  --surface-2: #f4f4f5;
+  --line: #e6e6e8;
+  --line-strong: #cfcfd4;
+  --ink: #000000;
+  --ink-2: #3f3f46;
+  --ink-3: #6b6b73;
+  --ink-4: #9a9aa2;
+
+  --accent: #0f2f6b;
+  --accent-hover: #0a2352;
+  --accent-tint: #e8eef9;
+  --accent-line: #c9d6f0;
+
+  --ok: #0b6b47;
+  --ok-tint: #e6f4ec;
+  --warn: #8a5300;
+  --warn-tint: #fbf1df;
+  --crit: #a61b1b;
+  --crit-tint: #fbe9e9;
+  --muted: #5c5c66;
+  --muted-tint: #f1f1f3;
+
+  --route-1: #0f2f6b;
+  --route-2: #14532d;
+  --route-3: #7a1f2b;
+  --route-4: #0e5f6b;
+  --route-5: #4a2268;
+  --route-6: #8f3a12;
+  --route-7: #55601a;
+  --route-8: #334155;
+
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-sheet: 20px;
+  --float: 0 8px 24px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 480ms;
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}

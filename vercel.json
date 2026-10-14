@@ -1,0 +1,28 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/instances",
+      "schedule": "35 18 * * *"
+    },
+    {
+      "path": "/api/cron/notices",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/delays",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/stale",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/retention",
+      "schedule": "30 21 * * *"
+    },
+    {
+      "path": "/api/cron/freshness",
+      "schedule": "30 2 * * *"
+    }
+  ]
+}
